@@ -1,12 +1,11 @@
 package com.johan.calculadora
 
 import kotlin.math.*
-import java.util.Scanner
 
-// CLASE BASE
+// CLASE BASE 
 // Aqui va la clase principal Calculadora
 // Tiene las operaciones basicas: sumar, restar, multiplicar y dividir
-// Esta clase es "open" para que otra clase pueda heredar de ella
+// Se usa "open" para que otra clase pueda heredar de ella
 open class Calculadora {
 
     fun sumar(a: Double, b: Double): Double = a + b
@@ -22,13 +21,13 @@ open class Calculadora {
     }
 }
 
-//  CLASE CIENTIFICA 
+// CLASE CIENTIFICA 
 // Esta clase hereda de Calculadora y agrega funciones avanzadas
 // Aqui estan las funciones trigonometricas, potencias, logaritmos y conversiones
 class CalculadoraCientifica : Calculadora() {
 
     fun seno(x: Double, enGrados: Boolean = true): Double {
-        // Si el angulo esta en grados, lo convierte a radianes
+        // Si el angulo esta en grados, se convierte a radianes
         val rad = if (enGrados) Math.toRadians(x) else x
         return sin(rad)
     }
@@ -72,7 +71,7 @@ class CalculadoraCientifica : Calculadora() {
     fun radianesAGrados(r: Double): Double = Math.toDegrees(r)
 }
 
-//  CLASE MEMORIA
+// CLASE MEMORIA
 // Esta clase guarda un valor en memoria como las calculadoras reales
 // Se puede sumar, restar, ver o limpiar el valor guardado
 class Memoria {
@@ -93,34 +92,34 @@ class Memoria {
     }
 }
 
-//  FUNCION PRINCIPAL (MAIN) 
+// FUNCION PRINCIPAL
 // Aqui va el menu principal del programa, donde el usuario elige que hacer
+// Se usa readLine() en lugar de Scanner para evitar errores de entrada
 fun main() {
-    val scanner = Scanner(System.`in`)
     val calc = CalculadoraCientifica() // se crea una calculadora cientifica
     val memoria = Memoria() // se crea la memoria para guardar valores
 
     while (true) {
-        // Aqui se muestra el menu de opciones
         println("\n===== CALCULADORA CIENTIFICA =====")
         println("1. Operaciones basicas (+, -, *, /)")
         println("2. Funciones trigonometricas (sin, cos, tan)")
         println("3. Potencias, raices y logaritmos")
         println("4. Memoria (M+, M-, MR, MC)")
         println("0. Salir")
-        print("Opcion: ")
 
-        when (scanner.nextInt()) {
+        val opcion = leerEntero("Opcion: ") ?: run {
+            println("Entrada finalizada. Saliendo...")
+            break
+        }
+
+        when (opcion) {
             1 -> {
-                // Operaciones basicas
-                print("Primer numero: "); val a = scanner.nextDouble()
-                print("Segundo numero: "); val b = scanner.nextDouble()
+                val a = leerDouble("Primer numero: ") ?: continue
+                val b = leerDouble("Segundo numero: ") ?: continue
 
                 println("Suma: ${calc.sumar(a, b)}")
                 println("Resta: ${calc.restar(a, b)}")
                 println("Multiplicacion: ${calc.multiplicar(a, b)}")
-
-                // Division con control de error
                 try {
                     println("Division: ${calc.dividir(a, b)}")
                 } catch (e: Exception) {
@@ -129,20 +128,17 @@ fun main() {
             }
 
             2 -> {
-                // Funciones trigonometricas
-                print("Angulo en grados: "); val ang = scanner.nextDouble()
+                val ang = leerDouble("Angulo en grados: ") ?: continue
                 println("Seno: ${calc.seno(ang)}")
                 println("Coseno: ${calc.coseno(ang)}")
                 println("Tangente: ${calc.tangente(ang)}")
             }
 
             3 -> {
-                // Potencias, raices y logaritmos
-                print("Numero base: "); val base = scanner.nextDouble()
-                print("Exponente: "); val exp = scanner.nextDouble()
+                val base = leerDouble("Numero base: ") ?: continue
+                val exp = leerDouble("Exponente: ") ?: continue
 
                 println("Potencia: ${calc.potencia(base, exp)}")
-
                 try {
                     println("Raiz cuadrada: ${calc.raiz(base)}")
                     println("Log10: ${calc.log10(base)}")
@@ -154,18 +150,17 @@ fun main() {
             }
 
             4 -> {
-                // Funciones de memoria
                 println("1) M+  2) M-  3) MR  4) MC")
-                when (scanner.nextInt()) {
-                    1 -> { print("Valor: "); memoria.mPlus(scanner.nextDouble()) }
-                    2 -> { print("Valor: "); memoria.mMinus(scanner.nextDouble()) }
+                when (leerEntero("Elige memoria: ") ?: continue) {
+                    1 -> { val v = leerDouble("Valor: ") ?: continue; memoria.mPlus(v) }
+                    2 -> { val v = leerDouble("Valor: ") ?: continue; memoria.mMinus(v) }
                     3 -> println("Memoria actual: ${memoria.mr()}")
                     4 -> { memoria.mClear(); println("Memoria borrada") }
+                    else -> println("Opcion de memoria no valida")
                 }
             }
 
             0 -> {
-                // Sale del programa
                 println("Saliendo...")
                 break
             }
@@ -173,4 +168,30 @@ fun main() {
             else -> println("Opcion no valida")
         }
     }
+}
+
+//  FUNCIONES DE APOYO 
+// Estas funciones leen numeros desde consola sin romper el programa
+// Si el usuario pone algo no valido, muestran mensaje y devuelven null
+
+fun leerEntero(prompt: String): Int? {
+    print(prompt)
+    val line = readLine() ?: return null // si no hay entrada (EOF), sale
+    val v = line.trim().toIntOrNull()
+    if (v == null) {
+        println("Entrada no valida, escribe un numero entero")
+        return null
+    }
+    return v
+}
+
+fun leerDouble(prompt: String): Double? {
+    print(prompt)
+    val line = readLine() ?: return null
+    val v = line.trim().replace(",", ".").toDoubleOrNull()
+    if (v == null) {
+        println("Entrada no valida, escribe un numero (usa punto decimal)")
+        return null
+    }
+    return v
 }
