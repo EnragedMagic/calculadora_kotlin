@@ -57,8 +57,11 @@ El programa se organiza en tres partes principales:
 
 ---
 
-## Diagrama UML — Explicacion
+## Diagrama UML 
 El siguiente diagrama representa la relacion entre las clases de la aplicacion:
+
+<img width="987" height="555" alt="image" src="https://github.com/user-attachments/assets/b8816024-e3b8-4d4a-8121-f46531be41cb" />
+
 
 - **Calculadora** es la clase base con las operaciones aritmeticas.  
 - **CalculadoraCientifica** hereda de `Calculadora` e incluye funciones trigonométricas, potencias, logaritmos y raices.  
